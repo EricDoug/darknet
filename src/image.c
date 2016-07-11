@@ -1153,3 +1153,54 @@ void free_image(image m)
 {
     free(m.data);
 }
+
+
+#ifdef OPENCV
+    void frame_to_avi(char *filedir, char *outputfile)
+    {   
+        int num = 1;
+        CvSize size = cvSize(1024, 960);  // 视频帧格式的大小
+        double fps = 3;   // 每秒钟的帧率
+
+        CvVideoWriter *writer = cvCreateVideoWriter(outputfile, -1, fps, size);   // 创建视频文件
+
+        char cname[100];
+
+        char *filename = "%5d.jpg";
+
+        char *file = malloc(strlen(filedir)+strlen(filename)+1);
+
+        strcpy(file, filedir);
+        strcat(file, file)
+        printf("%s", &file);
+        sprintf(cname, file, num);
+
+        IplImage *src = cvLoadImage(cname);
+
+        if (!src){
+            return;
+        }
+
+        IplImage *src_resize = cvCreateImage(size, 8, 3);
+        cvNamedWindow("avi");
+
+        while(src) {
+            cvShowImage("avi", src_resize);
+            cvWaitKey(1);
+            cvResize(src, src_resize);  // 将读取的图片设置为视频格式大小相同
+
+            cvWriteFrame(writer, src_resize);
+            cvReleaseImage(&src);
+
+            num++;
+            sprintf(cname, file, num);
+            src = cvLoadImage(cname);   // 循环读取数据
+
+        }
+
+        cvReleaseVideoWriter(&writer);
+        cvReleaseImage(&src_resize);
+
+    }
+
+#endif
