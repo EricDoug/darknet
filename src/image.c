@@ -1162,7 +1162,11 @@ void free_image(image m)
         CvSize size = cvSize(1024, 960);  // 视频帧格式的大小
         double fps = 3;   // 每秒钟的帧率
 
-        CvVideoWriter *writer = cvCreateVideoWriter(outputfile, -1, fps, size);   // 创建视频文件
+        int fcc = CV_FOURCC('M', 'J', 'P', 'G');
+
+        int is_color = 1;
+
+        CvVideoWriter *writer = cvCreateVideoWriter(outputfile, fcc, fps, size,is_color);   // 创建视频文件
 
         char cname[100];
 
@@ -1171,30 +1175,30 @@ void free_image(image m)
         char *file = malloc(strlen(filedir)+strlen(filename)+1);
 
         strcpy(file, filedir);
-        strcat(file, file)
+        strcat(file, file);
         printf("%s", &file);
         sprintf(cname, file, num);
 
-        IplImage *src = cvLoadImage(cname);
+        IplImage *src = cvLoadImage(cname, is_color);
 
         if (!src){
             return;
         }
 
         IplImage *src_resize = cvCreateImage(size, 8, 3);
-        cvNamedWindow("avi");
+        cvNamedWindow("avi",is_color);
 
         while(src) {
             cvShowImage("avi", src_resize);
             cvWaitKey(1);
-            cvResize(src, src_resize);  // 将读取的图片设置为视频格式大小相同
+            cvResize(src, src_resize,is_color);  // 将读取的图片设置为视频格式大小相同
 
             cvWriteFrame(writer, src_resize);
             cvReleaseImage(&src);
 
             num++;
             sprintf(cname, file, num);
-            src = cvLoadImage(cname);   // 循环读取数据
+            src = cvLoadImage(cname,is_color);   // 循环读取数据
 
         }
 
