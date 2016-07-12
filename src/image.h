@@ -86,5 +86,6 @@ image get_image_layer(image m, int l);
 
 void free_image(image m);
 void test_resize(char *filename);
+void frame_to_avi(char *filedir, char *outputfile);
 #endif
 

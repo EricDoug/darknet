@@ -1159,51 +1159,78 @@ void free_image(image m)
     void frame_to_avi(char *filedir, char *outputfile)
     {   
         int num = 1;
-        CvSize size = cvSize(1024, 960);  // 视频帧格式的大小
-        double fps = 3;   // 每秒钟的帧率
-
-        int fcc = CV_FOURCC('M', 'J', 'P', 'G');
-
         int is_color = 1;
-
-        CvVideoWriter *writer = cvCreateVideoWriter(outputfile, fcc, fps, size,is_color);   // 创建视频文件
 
         char cname[100];
 
-        char *filename = "%5d.jpg";
+        sprintf(cname, "/Users/EricDoug/Documents/buaa/video_handlers/videos/zoc/072814/zoc_072814_%05d.jpg", num);
+        printf("%s\n", cname);
 
-        char *file = malloc(strlen(filedir)+strlen(filename)+1);
+        IplImage *src = 0;
 
-        strcpy(file, filedir);
-        strcat(file, file);
-        printf("%s", &file);
-        sprintf(cname, file, num);
+        src = cvLoadImage(cname, is_color);
 
-        IplImage *src = cvLoadImage(cname, is_color);
+        printf("Frame width:%d, Frame height:%d\n", src->width, src->height);
 
-        if (!src){
+         if (!src){
+            printf("Cant not load image!\n");
+            return;
+        }
+        CvSize size = cvSize(src->width, src->height);  // 视频帧格式的大小
+        double fps = 5;   // 每秒钟的帧率
+
+        int fcc = CV_FOURCC('M', 'J', 'P', 'G');
+
+        
+
+        CvVideoWriter *writer = cvCreateVideoWriter("/Users/EricDoug/Documents/buaa/video_handlers/videos/zoc/test.avi", fcc, fps, size,is_color);   // 创建视频文件
+
+        if(!writer) {
+            printf("Can not create video writer!\n");
             return;
         }
 
-        IplImage *src_resize = cvCreateImage(size, 8, 3);
+        // char *filename = "%5d.jpg";
+
+        // char *file = malloc(strlen(filedir)+strlen(filename)+1);
+
+        // strcpy(file, filedir);
+        // strcat(file, file);
+
+        // printf("%s", file);
+        
+
+        
+        // int ret = 0;
+        // ret = cvWriteFrame(writer, src);
+
+        // if(ret != 1) {
+        //     printf("Can not write the first frame.\n");
+        //     return;
+        // }
+
+        
+
+        // IplImage *src_resize = cvCreateImage(size, src->depth, src->nChannels);
         cvNamedWindow("avi",is_color);
 
         while(src) {
-            cvShowImage("avi", src_resize);
+            cvShowImage("avi", src);
             cvWaitKey(1);
-            cvResize(src, src_resize,is_color);  // 将读取的图片设置为视频格式大小相同
+            // cvResize(src, src_resize, CV_INTER_LINEAR);  // 将读取的图片设置为视频格式大小相同
 
-            cvWriteFrame(writer, src_resize);
-            cvReleaseImage(&src);
+            cvWriteFrame(writer, src);
+            // cvReleaseImage(&src);
 
             num++;
-            sprintf(cname, file, num);
+            sprintf(cname, "/Users/EricDoug/Documents/buaa/video_handlers/videos/zoc/072814/zoc_072814_%05d.jpg", num);
+            printf("%s\n", cname);
             src = cvLoadImage(cname,is_color);   // 循环读取数据
 
         }
 
         cvReleaseVideoWriter(&writer);
-        cvReleaseImage(&src_resize);
+        //cvReleaseImage(&src);
 
     }
 
